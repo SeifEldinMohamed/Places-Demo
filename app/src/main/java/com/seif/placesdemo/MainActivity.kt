@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.Menu
+import android.view.MenuItem
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import com.google.android.libraries.places.api.model.Place
@@ -26,20 +27,26 @@ lateinit var navController: NavController
         val navHostFragment = supportFragmentManager.findFragmentById(R.id.navHostFragment) as NavHostFragment
         navController = navHostFragment.navController
 
-
-
-        // Set the fields to specify which types of place data to
-        // return after the user has made a selection.
-        val fields = listOf(Place.Field.ID, Place.Field.NAME)
-
-        // Start the autocomplete intent.
-        val intent = Autocomplete.IntentBuilder(AutocompleteActivityMode.FULLSCREEN, fields)
-            .build(this)
-        startActivityForResult(intent, AUTOCOMPLETE_REQUEST_CODE)
-
-
-
     }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when(item.itemId){
+            R.id.menu_search -> {
+                // Set the fields to specify which types of place data to
+                // return after the user has made a selection.
+                val fields = listOf(Place.Field.ID, Place.Field.NAME)
+
+                // Start the autocomplete intent.
+                val intent = Autocomplete.IntentBuilder(AutocompleteActivityMode.FULLSCREEN, fields)
+              //  val intent = Autocomplete.IntentBuilder(AutocompleteActivityMode.OVERLAY, fields)
+                    .build(this)
+                startActivityForResult(intent, AUTOCOMPLETE_REQUEST_CODE)
+            }
+        }
+        return super.onOptionsItemSelected(item)
+    }
+
+
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (requestCode == AUTOCOMPLETE_REQUEST_CODE) {
