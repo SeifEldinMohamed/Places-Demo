@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import com.google.android.gms.common.api.Status
 import com.google.android.libraries.places.api.Places
 import com.google.android.libraries.places.api.model.Place
+import com.google.android.libraries.places.api.model.TypeFilter
 import com.google.android.libraries.places.widget.AutocompleteSupportFragment
 import com.google.android.libraries.places.widget.listener.PlaceSelectionListener
 import com.seif.placesdemo.databinding.FragmentHomeBinding
@@ -37,6 +38,10 @@ private lateinit var binding: FragmentHomeBinding
 
         // Specify the types of place data to return.
         autocompleteFragment.setPlaceFields(listOf(Place.Field.ID, Place.Field.NAME))
+
+        autocompleteFragment.setTypeFilter(TypeFilter.ADDRESS)
+       // autocompleteFragment.setTypeFilter(TypeFilter.CITIES)
+        autocompleteFragment.setCountries("EG") // when we restrict the result it reduce our cost of using places api
 
         // Set up a PlaceSelectionListener to handle the response.
         autocompleteFragment.setOnPlaceSelectedListener(object : PlaceSelectionListener {
