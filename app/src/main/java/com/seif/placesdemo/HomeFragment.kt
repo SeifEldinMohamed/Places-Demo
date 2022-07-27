@@ -1,21 +1,31 @@
 package com.seif.placesdemo
 
+import android.Manifest
+import android.annotation.SuppressLint
+import android.content.pm.PackageManager
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
+import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.common.api.Status
 import com.google.android.libraries.places.api.Places
 import com.google.android.libraries.places.api.model.Place
+import com.google.android.libraries.places.api.model.PlaceLikelihood
 import com.google.android.libraries.places.api.model.TypeFilter
+import com.google.android.libraries.places.api.net.FindCurrentPlaceRequest
+import com.google.android.libraries.places.api.net.PlacesClient
 import com.google.android.libraries.places.widget.AutocompleteSupportFragment
 import com.google.android.libraries.places.widget.listener.PlaceSelectionListener
 import com.seif.placesdemo.databinding.FragmentHomeBinding
 
 class HomeFragment : Fragment() {
 private lateinit var binding: FragmentHomeBinding
+private lateinit var placesClient: PlacesClient
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -29,8 +39,7 @@ private lateinit var binding: FragmentHomeBinding
         super.onViewCreated(view, savedInstanceState)
 
         Places.initialize(requireContext(), BuildConfig.MAPS_API_KEY)
-        val placesClient = Places.createClient(requireContext())
-
+        placesClient = Places.createClient(requireContext())
         // Initialize the AutocompleteSupportFragment.
         val autocompleteFragment =
             childFragmentManager.findFragmentById(R.id.autocomplete_fragment)
@@ -52,6 +61,43 @@ private lateinit var binding: FragmentHomeBinding
                 Log.i("TAG", "An error occurred: $status")
             }
         })
+        getCurrentPlaceLocations()
+
+    }
+    @SuppressLint("MissingPermission")
+    private fun getCurrentPlaceLocations(){
+
+// Use fields to define the data types to return.
+        val placeFields: List<Place.Field> = listOf(Place.Field.NAME)
+
+// Use the builder to create a FindCurrentPlaceRequest.
+        val request = FindCurrentPlaceRequest.newInstance(placeFields)
+
+// Call findCurrentPlace and handle the response (first check that the user has granted permission).
+        if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) ==
+            PackageManager.PERMISSION_GRANTED) {
+            val placeResponse = placesClient.findCurrentPlace(request)
+            placeResponse.addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    val response = task.result
+                    for (placeLikelihood: PlaceLikelihood in response?.placeLikelihoods ?: emptyList()) { // places around us
+                        Log.i(
+                            "TAG",
+                            "Place '${placeLikelihood.place.name}' has likelihood: ${placeLikelihood.likelihood}"
+                        )
+                    }
+                } else {
+                    val exception = task.exception
+                    if (exception is ApiException) {
+                        Log.e("TAG", "Place not found: ${exception.statusCode}")
+                    }
+                }
+            }
+        } else {
+            // A local method to request required permissions;
+            // See https://developer.android.com/training/permissions/requesting
+           requestPermissions(arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), 1)
+        }
 
     }
 }
