@@ -51,24 +51,60 @@ package com.seif.placesdemo
 // To use the library you do not need to declare any additional permissions in your app's manifest,
 // as the library declares all permissions it uses in its manifest. However, if your app uses PlacesClient.findCurrentPlace(), you must request location permissions at runtime.
 //
-//If your app does not use PlacesClient.findCurrentPlace(), explicitly remove the ACCESS_FINE_LOCATION permission introduced
+// If your app does not use PlacesClient.findCurrentPlace(), explicitly remove the ACCESS_FINE_LOCATION permission introduced
 // by the library by adding the following to your manifest:
 
 // To find the local business or other place where the device is currently located, follow these steps:
 //
-//Call ContextCompat.checkSelfPermission to check whether the user has granted permission to access their device location. Your app must also include code to prompt the user for permission, and to handle the result. See Request App Permissions for details.
-//Create a FindCurrentPlaceRequest, passing a List of Place.Fields, specifying the place data types your app should request.
-//Call PlacesClient.findCurrentPlace(), passing the FindCurrentPlaceRequest you created in the previous step.
-//Get the list of PlaceLikelihoods from the FindCurrentPlaceResponse.
+// Call ContextCompat.checkSelfPermission to check whether the user has granted permission to access their device location. Your app must also include code to prompt the user for permission, and to handle the result. See Request App Permissions for details.
+// Create a FindCurrentPlaceRequest, passing a List of Place.Fields, specifying the place data types your app should request.
+// Call PlacesClient.findCurrentPlace(), passing the FindCurrentPlaceRequest you created in the previous step.
+// Get the list of PlaceLikelihoods from the FindCurrentPlaceResponse.
 
-// Note: findCurrentPlace() does NOT support the following fields: Place.Field.ADDRESS_COMPONENTS, Place.Field.OPENING_HOURS, Place.Field.PHONE_NUMBER, Place.Field.UTC_OFFSET, and Place.Field.WEBSITE_URI.
-//Fields correspond to Place Search results, and are divided into three billing categories: Basic, Contact, and Atmosphere. Basic fields are billed at base rate, and incur no additional charges. Contact and Atmosphere fields are billed at a higher rate. For more information about how Place data requests are billed, see Usage and Billing.
+// - Note: findCurrentPlace() does NOT support the following fields: Place.Field.ADDRESS_COMPONENTS, Place.Field.OPENING_HOURS, Place.Field.PHONE_NUMBER, Place.Field.UTC_OFFSET, and Place.Field.WEBSITE_URI.
+// Fields correspond to Place Search results, and are divided into three billing categories: Basic, Contact, and Atmosphere. Basic fields are billed at base rate, and incur no additional charges. Contact and Atmosphere fields are billed at a higher rate. For more information about how Place data requests are billed, see Usage and Billing.
 //
-//The API returns a FindCurrentPlaceResponse in a Task. The FindCurrentPlaceResponse contains a list of PlaceLikelihood objects representing places where the device is likely to be located. For each place, the result includes an indication of the likelihood that the place is the right one. The list may be empty, if there is no known place corresponding to the given device location.
+// The API returns a FindCurrentPlaceResponse in a Task. The FindCurrentPlaceResponse contains a list of PlaceLikelihood objects representing places where the device is likely to be located. For each place, the result includes an indication of the likelihood that the place is the right one. The list may be empty, if there is no known place corresponding to the given device location.
 //
-//You can call PlaceLikelihood.getPlace() to retrieve a Place object, and PlaceLikelihood.getLikelihood() to get the place's likelihood rating. A higher value means a greater probability that the place is the best match.
+// You can call PlaceLikelihood.getPlace() to retrieve a Place object, and PlaceLikelihood.getLikelihood() to get the place's likelihood rating. A higher value means a greater probability that the place is the best match.
 //
-//The following code sample retrieves the list of places where the device is most likely to be located, and logs the name and likelihood for each place.
+// The following code sample retrieves the list of places where the device is most likely to be located, and logs the name and likelihood for each place.
 
-/** video 15 : get the current place and discover place at the devices current user location **/
+/** video 15 : get a place by id **/
 //
+// The Places SDK for Android provides your app with rich information about places, including the place's name and address,
+// the geographical location specified as latitude/longitude coordinates, the type of place (such as night club, pet store, museum),
+// and more. To access this information for a specific place, you can use the place ID, a stable identifier that uniquely identifies a place.
+//
+// - Place details
+// The Place object provides information about a specific place. You can get hold of a Place object in the following ways:
+//
+// - Call PlacesClient.findCurrentPlace() – See the guide to getting the current place.
+// - Call PlacesClient.fetchPlace() – See the guide to getting a place by ID.
+//
+// - When you request a place, you must specify which types of place data to return.
+// To do this, pass a List<Place.Field>, specifying the data types to return.
+// This is an important consideration, since this will affect the cost for each request.
+// Because place data results cannot be empty, only place results with data are returned
+// (for example, if a requested place has no photos, the photos field will not be present
+// in the result). You can specify one or more of the following fields:
+//
+// Place.Field.ADDRESS
+// Place.Field.ADDRESS_COMPONENTS
+// Place.Field.BUSINESS_STATUS
+// Place.Field.ID
+// Place.Field.LAT_LNG
+// Place.Field.NAME
+// Place.Field.OPENING_HOURS
+// Place.Field.PHONE_NUMBER
+// Place.Field.PHOTO_METADATAS
+// Place.Field.PLUS_CODE
+// Place.Field.PRICE_LEVEL
+// Place.Field.RATING
+// Place.Field.TYPES
+// Place.Field.USER_RATINGS_TOTAL
+// Place.Field.ICON_URL
+// Place.Field.ICON_BACKGROUND_COLOR
+// Place.Field.VIEWPORT
+// Place.Field.UTC_OFFSET
+// Place.Field.WEBSITE_URI
